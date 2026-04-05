@@ -1,0 +1,2827 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hireX — Work where you belong.</title>
+  <style>
+    :root {
+      --bg: #F5F5F7;
+      --accent: #8f40c6;
+      --accent-dark: #7230a8;
+      --accent-light: #b36de0;
+      --text: #3b3b3c;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #a1a1a6;
+      --card-bg: #ffffff;
+      --border: rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ===== NAV ===== */
+    #main-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    #nav-bar {
+      position: relative;
+      z-index: 1000;
+      background: rgba(245, 245, 247, 0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      transition: background .3s, border-color .3s;
+    }
+
+    #main-nav.is-open #nav-bar {
+      background: #fff;
+      border-bottom-color: transparent;
+    }
+
+    #nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 52px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+
+    #nav-logo {
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      letter-spacing: -.5px;
+      text-decoration: none;
+      justify-self: start;
+      transition: opacity .2s;
+    }
+
+    #nav-logo span {
+      color: var(--accent);
+    }
+
+    #main-nav.is-open #nav-logo {
+      opacity: .45;
+    }
+
+    #nav-links {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 0;
+    }
+
+    #nav-links li a {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 0 13px;
+      height: 52px;
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .2s;
+      user-select: none;
+    }
+
+    #main-nav.is-open #nav-links li a {
+      opacity: .4;
+    }
+
+    #main-nav.is-open #nav-links li.active a {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    #nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-self: end;
+      transition: opacity .2s;
+    }
+
+    #main-nav.is-open #nav-actions {
+      opacity: .4;
+    }
+
+    .btn-nav-cta {
+      font-size: 13px;
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: none;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .btn-nav-cta:hover {
+      background: var(--accent-dark);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+
+    /* SCRIM */
+    #nav-scrim {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, .22);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 498;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+      cursor: pointer;
+    }
+
+    body.nav-open #nav-scrim {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* MEGA MENU */
+    #mega-menu-wrap {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 1001;
+      background: rgba(255, 255, 255, .98);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, .08);
+      overflow: hidden;
+      height: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: height .4s cubic-bezier(.4, 0, .2, 1), opacity .3s ease, visibility 0s linear .4s;
+      pointer-events: none;
+    }
+
+    #main-nav.is-open #mega-menu-wrap {
+      height: auto;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+      transition: height .4s cubic-bezier(.4, 0, .2, 1), opacity .3s ease, visibility 0s linear 0s;
+    }
+
+    .mega-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 40px 0 52px;
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .35s ease, transform .4s cubic-bezier(.4, 0, .2, 1), visibility 0s linear .4s;
+    }
+
+    .mega-panel.visible {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .35s ease, transform .4s cubic-bezier(.4, 0, .2, 1), visibility 0s linear 0s;
+    }
+
+    .mega-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr;
+      gap: 60px;
+    }
+
+    .mega-col {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .mega-panel.visible .mega-col {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .5s ease out, transform .5s cubic-bezier(.23, 1, .32, 1);
+    }
+
+    .mega-panel.visible .mega-col:nth-child(1) {
+      transition-delay: .1s;
+    }
+
+    .mega-panel.visible .mega-col:nth-child(2) {
+      transition-delay: .15s;
+    }
+
+    .mega-panel.visible .mega-col:nth-child(3) {
+      transition-delay: .2s;
+    }
+
+    .mega-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .mlink-large {
+      display: block;
+      width: fit-content;
+      font-size: 25px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      margin-bottom: 12px;
+      transition: color .2s;
+      letter-spacing: -.5px;
+      line-height: 1.1;
+      cursor: pointer;
+    }
+
+    .mlink-large:hover {
+      color: var(--accent);
+    }
+
+    .mlink-sub {
+      display: block;
+      width: fit-content;
+      padding: 6px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      transition: color .2s;
+      cursor: pointer;
+    }
+
+    .mlink-sub:hover {
+      color: var(--accent);
+    }
+
+    .mega-promo {
+      background: linear-gradient(135deg, var(--accent), #6a28a0);
+      border-radius: 14px;
+      padding: 18px;
+      color: white;
+    }
+
+    .mega-promo-tag {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: rgba(255, 255, 255, .6);
+      margin-bottom: 7px;
+      display: block;
+    }
+
+    .mega-promo-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .mega-promo-cta {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .8);
+      cursor: pointer;
+    }
+
+    .mega-promo-cta:hover {
+      color: #fff;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(143, 64, 198, .12) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(143, 64, 198, .06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(52px, 7vw, 88px);
+      font-weight: 700;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      color: var(--text);
+      max-width: 800px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp .55s .05s cubic-bezier(.25, .46, .45, .94) forwards;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: clamp(17px, 2.5vw, 22px);
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin-bottom: 48px;
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeUp .55s .15s cubic-bezier(.25, .46, .45, .94) forwards;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp .55s .25s cubic-bezier(.25, .46, .45, .94) forwards;
+    }
+
+    .btn-primary {
+      padding: 16px 32px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 980px;
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s cubic-bezier(.34, 1.56, .64, 1);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: scale(1.03);
+      box-shadow: 0 8px 24px rgba(143, 64, 198, .35);
+    }
+
+    .btn-secondary {
+      padding: 16px 32px;
+      background: transparent;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      border-radius: 980px;
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s cubic-bezier(.34, 1.56, .64, 1);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent);
+      color: white;
+      transform: scale(1.03);
+    }
+
+    .hero-img-wrap {
+      position: relative;
+      width: 100vw;
+      height: 480px;
+      overflow: hidden;
+      margin-top: 56px;
+      opacity: 0;
+      animation: fadeUp .6s .2s cubic-bezier(.25, .46, .45, .94) forwards;
+    }
+
+    .hero-img-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, .08) 0%, rgba(0, 0, 0, .35) 100%);
+    }
+
+    .hero-stat-cards {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      z-index: 2;
+    }
+
+    .hero-stat-card {
+      background: rgba(255, 255, 255, .1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: 16px;
+      padding: 16px 24px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .hero-stat-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      display: block;
+    }
+
+    .hero-stat-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .6);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 100px 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .section-title {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      color: var(--text);
+      max-width: 700px;
+    }
+
+    .section-sub {
+      font-size: 19px;
+      color: var(--text-secondary);
+      margin-top: 20px;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    .card-link {
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: gap .2s;
+    }
+
+    .card-link:hover {
+      gap: 8px;
+    }
+
+    /* ===== CAREER SLIDER ===== */
+    .careers-slider-wrap {
+      position: relative;
+      margin-top: 64px;
+      width: 100vw;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .careers-grid {
+      display: flex;
+      gap: 16px;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 8px max(24px, calc((100vw - 1200px) / 2)) 64px;
+      user-select: none;
+    }
+
+    .careers-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .career-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
+      transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .career-card.wide {
+      width: 400px;
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .career-card.narrow {
+      width: 313px;
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .career-card-top {
+      padding: 32px 28px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .career-card-img-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .career-card.narrow .career-card-img-wrap {
+      width: 253px;
+      height: 271px;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .career-card.wide .career-card-img-wrap {
+      width: 400px;
+      height: 271px;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .career-card-img-wrap img {
+      width: 230px;
+      height: 230px;
+      object-fit: contain;
+    }
+
+    .career-card.featured .career-card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .career-card h3 {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -.3px;
+    }
+
+    .career-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .career-card .card-link {
+      margin-top: auto;
+    }
+
+    .career-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(143, 64, 198, .06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .career-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px rgba(143, 64, 198, .15);
+      border-color: rgba(143, 64, 198, .25);
+    }
+
+    .career-card:hover::before {
+      opacity: 1;
+    }
+
+    .slider-arrow {
+      position: absolute;
+      top: calc(50% - 28px);
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, .3);
+      z-index: 10;
+      transition: all .3s cubic-bezier(.25, 1, .5, 1);
+      background: rgba(255, 255, 255, .25);
+      backdrop-filter: blur(28px) saturate(200%);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .08), inset 0 .5px .5px rgba(255, 255, 255, .6);
+    }
+
+    .slider-arrow:hover {
+      background: rgba(255, 255, 255, .45);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .12), inset 0 .5px .5px rgba(255, 255, 255, .8);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .slider-arrow svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--text);
+      stroke-width: 2.2;
+    }
+
+    .slider-arrow.prev {
+      left: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, background .3s, box-shadow .3s, transform .3s;
+    }
+
+    .slider-arrow.prev.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .slider-arrow.next {
+      right: 24px;
+    }
+
+    .slider-arrow.next.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ===== PILLARS ===== */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .pillar {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 48px 36px;
+      border: 1px solid var(--border);
+      transition: all .3s;
+    }
+
+    .pillar:hover {
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .08);
+      transform: translateY(-4px);
+    }
+
+    .pillar-icon {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      background: #f0f0f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .05);
+    }
+
+    .pillar h3 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: -.3px;
+    }
+
+    .pillar p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ===== EMPLOYER SECTION ===== */
+    .employer-section {
+      background: var(--text);
+      border-radius: 32px;
+      margin: 0 16px;
+      padding: 100px 60px;
+      color: white;
+    }
+
+    .employer-section .section-eyebrow {
+      color: var(--accent-light);
+    }
+
+    .employer-section .section-title {
+      color: white;
+    }
+
+    .employer-section .section-sub {
+      color: rgba(255, 255, 255, .6);
+    }
+
+    .employer-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      margin-top: 64px;
+    }
+
+    .employer-feature h4 {
+      font-size: 19px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 12px;
+      letter-spacing: -.3px;
+    }
+
+    .employer-feature p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, .55);
+      line-height: 1.7;
+    }
+
+    .feature-num {
+      font-size: 13px;
+      color: var(--accent-light);
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: block;
+      letter-spacing: .05em;
+    }
+
+    /* ===== TIMELINE ===== */
+    .timeline {
+      display: flex;
+      gap: 0;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      right: 28px;
+      height: 2px;
+      background: linear-gradient(to right, var(--accent), var(--accent-light), rgba(143, 64, 198, .2));
+      z-index: 0;
+    }
+
+    .timeline-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 0 0 6px var(--bg);
+      transition: all .3s;
+    }
+
+    .step-circle svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--accent);
+      stroke-width: 2;
+      fill: none;
+      transition: all .3s;
+    }
+
+    .timeline-step:hover .step-circle {
+      background: var(--accent);
+      transform: scale(1.1);
+      box-shadow: 0 0 0 6px var(--bg), 0 8px 20px rgba(143, 64, 198, .3);
+    }
+
+    .timeline-step:hover .step-circle svg {
+      stroke: white;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ===== METRICS ===== */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-top: 64px;
+    }
+
+    .metric-box {
+      background: var(--card-bg);
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    .metric-num {
+      font-size: 60px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .metric-num span {
+      color: var(--accent);
+    }
+
+    .metric-label {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 64px;
+    }
+
+    .testimonial {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 32px 28px;
+      border: 1px solid var(--border);
+    }
+
+    .testimonial-text {
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .author-role {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* ===== CONTACT SECTION ===== */
+    .contact-email-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .contact-email-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 32px;
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: all .3s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .contact-email-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(143, 64, 198, .12);
+      border-color: rgba(143, 64, 198, .25);
+    }
+
+    .contact-email-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: rgba(143, 64, 198, .1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .3s;
+    }
+
+    .contact-email-card:hover .contact-email-icon {
+      background: rgba(143, 64, 198, .18);
+    }
+
+    .contact-email-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--accent);
+      stroke-width: 1.8;
+      fill: none;
+    }
+
+    .contact-email-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 6px;
+    }
+
+    .contact-email-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .contact-email-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* ===== CV UPLOAD FORM ===== */
+    .cv-section {
+      background: white;
+      border-radius: 32px;
+      margin: 0 16px;
+      padding: 80px 60px;
+    }
+
+    .cv-form-wrap {
+      max-width: 760px;
+      margin: 48px auto 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-field.full {
+      grid-column: 1/-1;
+    }
+
+    .form-field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: var(--accent);
+      background: white;
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .form-field textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .cv-upload-area {
+      border: 2px dashed rgba(143, 64, 198, .3);
+      border-radius: 16px;
+      padding: 40px 24px;
+      text-align: center;
+      background: rgba(143, 64, 198, .03);
+      cursor: pointer;
+      transition: all .3s;
+      position: relative;
+    }
+
+    .cv-upload-area:hover,
+    .cv-upload-area.drag-over {
+      border-color: var(--accent);
+      background: rgba(143, 64, 198, .06);
+    }
+
+    .cv-upload-area input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cv-upload-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(143, 64, 198, .1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .cv-upload-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--accent);
+      stroke-width: 1.8;
+      fill: none;
+    }
+
+    .cv-upload-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .cv-upload-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .cv-file-chosen {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .form-submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+      margin-top: 8px;
+    }
+
+    .form-submit-btn:hover {
+      background: var(--accent-dark);
+      box-shadow: 0 8px 24px rgba(143, 64, 198, .35);
+    }
+
+    .form-submit-btn:active {
+      transform: scale(.98);
+    }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 24px;
+      background: rgba(52, 211, 153, .08);
+      border-radius: 16px;
+      border: 1px solid rgba(52, 211, 153, .2);
+    }
+
+    .form-success-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .form-success h4 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .form-success p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ===== CTA BANNER ===== */
+    .cta-banner {
+      text-align: center;
+      background: linear-gradient(135deg, var(--accent) 0%, #6a28a0 100%);
+      border-radius: 28px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 1200px;
+      box-sizing: border-box;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -20%;
+      width: 60%;
+      height: 200%;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 50%;
+    }
+
+    .cta-banner h2 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .cta-banner p {
+      font-size: 19px;
+      color: rgba(255, 255, 255, .75);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .btn-white {
+      padding: 16px 36px;
+      background: white;
+      color: var(--accent);
+      border: none;
+      border-radius: 980px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s;
+      display: inline-block;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .btn-white:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+    }
+
+    /* ===== OFFICES ===== */
+    .contact-offices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .office-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+
+    .office-flag {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .office-flag img {
+      height: 1.1em;
+      width: auto;
+      border-radius: 2px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+    }
+
+    .office-city {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .office-country {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 14px;
+    }
+
+    .office-detail {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .office-detail svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      opacity: .6;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      margin-top: 80px;
+      padding: 60px 24px 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.5px;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand h3 span {
+      color: var(--accent);
+    }
+
+    .footer-brand p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 260px;
+    }
+
+    .footer-col h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: color .15s;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-bottom p {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .footer-legal-link {
+      color: var(--text-tertiary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color .15s;
+    }
+
+    .footer-legal-link:hover {
+      color: var(--accent);
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .social-icons a {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .4s cubic-bezier(.175, .885, .32, 1.275);
+      position: relative;
+    }
+
+    .social-icons img {
+      width: 24px;
+      height: 24px;
+      filter: grayscale(1) opacity(.5);
+      transition: all .3s ease;
+    }
+
+    .social-icons a:hover {
+      transform: translateY(-8px) scale(1.15);
+    }
+
+    .social-icons a:hover img {
+      filter: invert(34%) sepia(35%) saturate(2333%) hue-rotate(243deg) brightness(91%) contrast(92%);
+      opacity: 1;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity .42s cubic-bezier(.25, .46, .45, .94), transform .42s cubic-bezier(.25, .46, .45, .94);
+      will-change: opacity, transform;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @keyframes bounceDown {
+
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: .5
+      }
+
+      50% {
+        transform: translateY(6px);
+        opacity: 1
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .6;
+        transform: scale(.85)
+      }
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-white {
+      transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s ease, background .18s ease !important;
+    }
+
+    .btn-primary:active,
+    .btn-secondary:active,
+    .btn-white:active {
+      transform: scale(.97) !important;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:860px) {
+      #nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      #nav-inner {
+        grid-template-columns: 1fr auto;
+      }
+
+      .pillars-grid,
+      .employer-features,
+      .metrics-row,
+      .contact-offices {
+        grid-template-columns: 1fr;
+      }
+
+      .employer-section,
+      .cv-section {
+        padding: 60px 32px;
+        margin: 0;
+      }
+
+      .employer-section {
+        border-radius: 0;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+      }
+
+      .testimonials {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      .timeline::before {
+        display: none;
+      }
+
+      .contact-email-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-field.full {
+        grid-column: auto;
+      }
+    }
+
+    @media(max-width:600px) {
+      section {
+        padding: 64px 20px;
+      }
+
+      .employer-section {
+        border-radius: 0;
+        padding: 60px 24px;
+      }
+
+      .cta-banner {
+        border-radius: 24px;
+      }
+
+      .hero-stat-cards {
+        flex-direction: column;
+      }
+
+      .contact-offices {
+        grid-template-columns: 1fr;
+      }
+
+      .cv-section {
+        border-radius: 0;
+        padding: 60px 24px;
+      }
+    }
+
+    /* ===== PAGE LOADER ===== */
+    #page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .4s cubic-bezier(.25, .46, .45, .94), visibility 0s linear .4s;
+    }
+
+    #page-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-logo {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: var(--text);
+      opacity: 0;
+      animation: loaderFadeIn .5s .1s cubic-bezier(.25, .46, .45, .94) forwards;
+    }
+
+    .loader-logo span {
+      color: var(--accent);
+    }
+
+    @keyframes loaderFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(.9)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    /* ===== TOAST ===== */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1c1c1e;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9000;
+      opacity: 0;
+      transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* NEW INCREMENTAL CSS overrides for Employer Section */
+    .employer-section {
+      background: linear-gradient(135deg, #4a0e8f, #b8123a, #c46e00, #8b6914, #0a6e7a) !important;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .employer-feature {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all .3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .employer-feature:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ===== CLIENT LOGO MARQUEE ===== */
+    .logo-marquee-wrap {
+      position: relative;
+      overflow: hidden;
+      padding: 40px 0;
+      margin-top: 48px;
+    }
+
+    .logo-marquee-wrap::before,
+    .logo-marquee-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .logo-marquee-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, var(--bg), transparent);
+    }
+
+    .logo-marquee-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, var(--bg), transparent);
+    }
+
+    .logo-marquee-track {
+      display: flex;
+      align-items: center;
+      gap: 64px;
+      width: max-content;
+      animation: marqueeScroll 30s linear infinite;
+    }
+
+    .logo-marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    .logo-marquee-track img {
+      height: 80px;
+      width: 160px;
+      object-fit: contain;
+      filter: grayscale(1) opacity(0.4);
+      transition: all .3s ease;
+    }
+
+    .logo-marquee-track img:hover {
+      filter: grayscale(0) opacity(1);
+    }
+
+    @keyframes marqueeScroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PAGE LOADER -->
+  <div id="page-loader">
+    <div class="loader-logo">hire<span>X</span></div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast">✓ Message sent</div>
+
+  <div id="nav-scrim" onclick="closeNav()"></div>
+
+  <nav id="main-nav">
+    <div id="nav-bar">
+      <div id="nav-inner">
+        <a id="nav-logo" href="#hero">hire<span>X</span></a>
+        <ul id="nav-links">
+          <li id="li-browse"><a onclick="toggleNav('browse')">Browse</a></li>
+          <li id="li-seekers"><a onclick="toggleNav('seekers')">For Job Seekers</a></li>
+          <li id="li-employers"><a onclick="toggleNav('employers')">For Employers</a></li>
+          <li id="li-about"><a onclick="toggleNav('about')">About</a></li>
+        </ul>
+        <div id="nav-actions">
+          <a class="btn-nav-cta" href="#apply">Upload CV</a>
+          <div class="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mega-menu-wrap">
+      <div class="mega-panel" id="mp-browse">
+        <div class="mega-grid" style="display: flex; gap: 80px;">
+          <div class="mega-col">
+            <span class="mega-label">Browse</span>
+            <a class="mlink-large" href="#careers" onclick="closeNav()">All Careers</a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-label">Quick Links</span>
+            <a class="mlink-sub" href="#apply" onclick="closeNav()">Upload CV</a>
+            <a class="mlink-sub" href="#contact" onclick="closeNav()">Get in Touch</a>
+            <a class="mlink-sub" href="#metrics" onclick="closeNav()">Our Numbers</a>
+          </div>
+        </div>
+      </div>
+      <div class="mega-panel" id="mp-seekers">
+        <div class="mega-grid" style="display: flex; gap: 80px;">
+          <div class="mega-col">
+            <span class="mega-label">For Job Seekers</span>
+            <a class="mlink-large" href="#how-it-works" onclick="closeNav()">How it Works</a>
+            <a class="mlink-large" href="#apply" onclick="closeNav()">Upload CV</a>
+          </div>
+        </div>
+      </div>
+      <div class="mega-panel" id="mp-employers">
+        <div class="mega-grid" style="display: flex; gap: 80px;">
+          <div class="mega-col">
+            <span class="mega-label">For Employers</span>
+            <a class="mlink-large" href="#contact" onclick="closeNav()">Hiring Solutions</a>
+            <a class="mlink-large" href="#employers" onclick="closeNav()">Overview</a>
+          </div>
+        </div>
+      </div>
+      <div class="mega-panel" id="mp-about">
+        <div class="mega-grid" style="display: flex; gap: 80px;">
+          <div class="mega-col">
+            <span class="mega-label">About hireX</span>
+            <a class="mlink-large" href="#about" onclick="closeNav()">Our Story</a>
+            <a class="mlink-large" href="#contact" onclick="closeNav()">Offices</a>
+          </div>
+          <div class="mega-col">
+            <span class="mega-label">People</span>
+            <a class="mlink-sub" href="#about" onclick="closeNav()">The Team</a>
+            <a class="mlink-sub" href="#metrics" onclick="closeNav()">Our Numbers</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <h1>Work where you<br><em>belong.</em></h1>
+    <p class="hero-sub">We connect professionals and companies across Southeast Europe with clarity, care, and
+      precision.</p>
+    <div class="hero-buttons">
+      <a class="btn-primary" href="#apply">Upload Your CV</a>
+      <a class="btn-secondary" href="mailto:sales@hirex.me">Hire Talent</a>
+    </div>
+    <div class="hero-img-wrap">
+      <img src="Images/hero-bg.png" alt="hireX team" class="hero-img-photo"
+        onerror="this.style.background='linear-gradient(135deg,#1a0a2e,#3b1a6e)';this.style.display='block';this.removeAttribute('src')">
+      <div class="hero-img-overlay"></div>
+      <div class="hero-stat-cards" style="display: none;">
+        <div class="hero-stat-card">
+          <span class="hero-stat-num">94%</span>
+          <span class="hero-stat-label">Placement Rate</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-num">12k+</span>
+          <span class="hero-stat-label">Placed Since 2022</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-num">48h</span>
+          <span class="hero-stat-label">First Response</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CAREER PATHS ==================== -->
+  <section style="padding-top:0;overflow:visible" id="careers">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-eyebrow">Career Paths</span>
+        <h2 class="section-title">Every career has a place here.</h2>
+        <p class="section-sub">From tech startups to established institutions — we know the landscape.</p>
+      </div>
+    </div>
+    <div class="careers-slider-wrap">
+      <button class="slider-arrow prev" id="career-prev" onclick="careerSlide(-1)" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <button class="slider-arrow next" id="career-next" onclick="careerSlide(1)" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+      <div class="careers-grid" id="careers-grid">
+
+        <div class="career-card wide featured reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap">
+            <img src="Images/career-featured.png" alt="Featured" onerror="this.style.display='none'"
+              style="width:100%;height:100%;object-fit:cover;border-radius:20px 20px 0 0;">
+          </div>
+          <div class="career-card-top">
+            <h3>Your career starts here</h3>
+            <p>We connect professionals with leading companies across Southeast Europe. With clarity, care, and
+              precision.</p>
+            <a class="card-link" href="#apply">Upload CV &amp; apply →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-tech.png" alt="Technology"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Technology &amp; IT</h3>
+            <p>Engineers, architects, analysts. Build the systems that move the world.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-finance.png" alt="Finance"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Finance &amp; Business</h3>
+            <p>Analysts, controllers, advisors. Where numbers meet real impact.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-health.png" alt="Healthcare"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Healthcare</h3>
+            <p>Roles that matter most. We connect people-first professionals with purpose-driven teams.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-creative.png" alt="Creative"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Creative &amp; Marketing</h3>
+            <p>For thinkers, makers, and storytellers. Great brands need great people.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-ops.png" alt="Operations"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Operations &amp; Logistics</h3>
+            <p>The backbone of every great company. We find the people who keep things moving.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-legal.png" alt="Legal"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Legal &amp; Compliance</h3>
+            <p>Lawyers, compliance specialists, and advisors. Protect the business with integrity.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-hr.png" alt="HR" onerror="this.style.opacity='0.1'">
+          </div>
+          <div class="career-card-top">
+            <h3>Human Resources</h3>
+            <p>HR managers, recruiters, HRBPs. Build a culture that retains the best.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-sales.png" alt="Sales"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Sales &amp; Business Dev</h3>
+            <p>Sales managers and business developers. Open new markets, close the right deals.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card narrow reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap"><img src="Images/career-hospitality.png" alt="Hospitality"
+              onerror="this.style.opacity='0.1'"></div>
+          <div class="career-card-top">
+            <h3>Hospitality &amp; Tourism</h3>
+            <p>Hotel managers, guides, service specialists. The Adriatic coast needs great professionals.</p>
+            <a class="card-link" href="#apply">Explore Roles →</a>
+          </div>
+        </div>
+
+        <div class="career-card wide featured reveal"
+          onclick="document.getElementById('apply').scrollIntoView({behavior:'smooth'})">
+          <div class="career-card-img-wrap">
+            <img src="Images/career-data.png" alt="Upload Your CV" onerror="this.style.display='none'"
+              style="width:100%;height:100%;object-fit:cover;border-radius:20px 20px 0 0;">
+          </div>
+          <div class="career-card-top">
+            <h3>Ready to take the next step?</h3>
+            <p>Upload your CV and let our team connect you with the right opportunity. It takes less than a minute.</p>
+            <a class="card-link" href="#apply">Upload CV &amp; apply →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CANDIDATE EXPERIENCE ==================== -->
+  <section>
+    <div class="container">
+      <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto">
+        <span class="section-eyebrow">Candidate Experience</span>
+        <h2 class="section-title" style="max-width:100%">Your career, clearly mapped.</h2>
+        <p class="section-sub" style="max-width:100%;margin:20px auto 0">We don't leave you guessing. Every step is
+          transparent, every response is real.</p>
+      </div>
+      <div class="pillars-grid">
+        <div class="pillar reveal">
+          <div class="pillar-icon">
+            <img src="Images/Quality.jpg" alt="Screened"
+              style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+          </div>
+          <h3>Screened for Quality</h3>
+          <p>Every role is vetted before it reaches you. We only show you positions that actually match your level,
+            experience, and goals.</p>
+        </div>
+        <div class="pillar reveal">
+          <div class="pillar-icon">
+            <img src="Images/Communication.jpg" alt="Communication"
+              style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+          </div>
+          <h3>Communication You Can Trust</h3>
+          <p>We follow up. Every time. No ghosting, no vague responses. You'll always know exactly where you stand.</p>
+        </div>
+        <div class="pillar reveal">
+          <div class="pillar-icon">
+            <img src="Images/Recruiter.jpg" alt="Recruiter"
+              style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+          </div>
+          <h3>Dedicated Recruiter</h3>
+          <p>One person who knows your story, your goals, and fights for the right fit — not just the fastest one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section style="background:white;margin:0 16px;border-radius:32px;padding:80px 60px" id="how-it-works" class="reveal">
+    <div class="container" style="max-width:100%">
+      <div style="text-align:center">
+        <span class="section-eyebrow">How It Works</span>
+        <h2 class="section-title" style="max-width:100%">Five steps to your next role.</h2>
+      </div>
+      <div class="timeline" style="margin-top:64px">
+        <div class="timeline-step">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </div>
+          <div class="step-title">Apply</div>
+          <div class="step-desc">Upload your CV in minutes. No lengthy forms.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <div class="step-title">Screened</div>
+          <div class="step-desc">A real recruiter reviews your profile within 48h.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div class="step-title">Feedback</div>
+          <div class="step-desc">Honest feedback, always. We tell you the truth.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+          </div>
+          <div class="step-title">Matched</div>
+          <div class="step-desc">Curated introductions to companies that fit.</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div class="step-title">Follow-Up</div>
+          <div class="step-desc">We don't vanish. Your recruiter stays in touch.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== EMPLOYER SECTION ==================== -->
+  <section style="padding:32px 0" id="employers">
+    <div class="employer-section reveal">
+      <span class="section-eyebrow">For Employers</span>
+      <h2 class="section-title">Hire without<br>the noise.</h2>
+      <p class="section-sub">We connect the right people. Not the most people.</p>
+      <div class="employer-features">
+        <div class="employer-feature reveal">
+          <h4>Curated Candidates</h4>
+          <p>Only shortlisted profiles that genuinely match your brief. No stacks of irrelevant CVs.</p>
+        </div>
+        <div class="employer-feature reveal">
+          <h4>Structured Feedback</h4>
+          <p>Clear reporting at every stage. You'll always know what's happening and why.</p>
+        </div>
+        <div class="employer-feature reveal">
+          <h4>Regional Expertise</h4>
+          <p>We know this market deeply. Local insight, professional standards, real results.</p>
+        </div>
+      </div>
+      <div style="margin-top:48px">
+        <a class="btn-white" href="mailto:sales@hirex.me">Start Hiring</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== METRICS ==================== -->
+  <section id="metrics">
+    <div class="container">
+      <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto">
+        <span class="section-eyebrow">Trust &amp; Results</span>
+        <h2 class="section-title" style="max-width:100%">Numbers that mean something.</h2>
+      </div>
+      <div class="metrics-row reveal">
+        <div class="metric-box">
+          <div class="metric-num">94<span>%</span></div>
+          <div class="metric-label">Placement rate across all roles</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-num">48<span>h</span></div>
+          <div class="metric-label">Average first response time</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-num">12<span>k+</span></div>
+          <div class="metric-label">Candidates placed since 2022</div>
+        </div>
+      </div>
+
+      <!-- Client Logo Marquee -->
+      <div class="logo-marquee-wrap reveal">
+        <div class="logo-marquee-track">
+          <!-- Set 1 -->
+          <img src="Images/logos/client-1.png" alt="Client">
+          <img src="Images/logos/client-2.png" alt="Client">
+          <img src="Images/logos/client-3.png" alt="Client">
+          <img src="Images/logos/client-4.png" alt="Client">
+          <img src="Images/logos/client-5.png" alt="Client">
+          <img src="Images/logos/client-6.png" alt="Client">
+          <img src="Images/logos/client-7.png" alt="Client">
+          <img src="Images/logos/client-8.png" alt="Client">
+          <!-- Duplicate for seamless loop -->
+          <img src="Images/logos/client-1.png" alt="Client">
+          <img src="Images/logos/client-2.png" alt="Client">
+          <img src="Images/logos/client-3.png" alt="Client">
+          <img src="Images/logos/client-4.png" alt="Client">
+          <img src="Images/logos/client-5.png" alt="Client">
+          <img src="Images/logos/client-6.png" alt="Client">
+          <img src="Images/logos/client-7.png" alt="Client">
+          <img src="Images/logos/client-8.png" alt="Client">
+        </div>
+      </div>
+
+      <div class="testimonials" style="margin-top:40px">
+        <div class="testimonial reveal">
+          <p class="testimonial-text">"I heard back within a day. My recruiter was honest about everything — even when
+            the news wasn't great. I got the job three weeks later."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">MK</div>
+            <div>
+              <div class="author-name">Maxim K.</div>
+              <div class="author-role">UX Designer, Baku</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial reveal">
+          <p class="testimonial-text">"We've tried other agencies. hireX is different — the candidates are genuinely
+            pre-screened and the communication is exceptional."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">IM</div>
+            <div>
+              <div class="author-name">Igor M.</div>
+              <div class="author-role">CEO, Polar Clean, Montenegro</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial reveal">
+          <p class="testimonial-text">"What I loved most? They followed up after I started. Three months in, my
+            recruiter checked in to see how I was settling. That's rare."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">EA</div>
+            <div>
+              <div class="author-name">Ervin A.</div>
+              <div class="author-role">Chef De Partie, Tirana</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ABOUT ==================== -->
+  <section id="about" style="padding-top:0">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center" class="reveal">
+        <div>
+          <span class="section-eyebrow">Our Story</span>
+          <h2 class="section-title">Built for this region.</h2>
+          <p style="font-size:17px;color:var(--text-secondary);line-height:1.8;margin-top:24px">Founded in 2022, hireX
+            started with a simple belief: job seekers deserve honest feedback and employers deserve real candidates —
+            not just fast ones.</p>
+          <p style="font-size:17px;color:var(--text-secondary);line-height:1.8;margin-top:16px">We've placed over 12,000
+            professionals across Southeast Europe, and we follow up on every single one.</p>
+        </div>
+        <div
+          style="border-radius:24px; height:320px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.03);">
+          <img src="Images/about-logo.jpg" alt="hireX Logo" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONTACT ==================== -->
+  <section id="contact">
+    <div class="container">
+      <div class="reveal" style="text-align:center;max-width:680px;margin:0 auto">
+        <span class="section-eyebrow">Get in Touch</span>
+        <h2 class="section-title" style="max-width:100%">We'd love to<br>hear from you.</h2>
+        <p class="section-sub" style="max-width:100%;margin:20px auto 0">Our team typically responds within 2 hours
+          during business hours. Reach us on the channel that works best for you.</p>
+      </div>
+
+      <div class="contact-email-grid reveal">
+        <!-- General Info -->
+        <a class="contact-email-card" href="mailto:info@hirex.me">
+          <div class="contact-email-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4M12 8h.01" />
+            </svg>
+          </div>
+          <div>
+            <div class="contact-email-label">General Enquiries</div>
+            <div class="contact-email-value">info@hirex.me</div>
+            <div class="contact-email-desc">Questions about hireX, the platform, or how we work. We'll point you in the
+              right direction.</div>
+          </div>
+        </a>
+
+        <!-- Support -->
+        <a class="contact-email-card" href="mailto:support@hirex.me">
+          <div class="contact-email-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div>
+            <div class="contact-email-label">Candidate Support</div>
+            <div class="contact-email-value">support@hirex.me</div>
+            <div class="contact-email-desc">Need help with your application, profile, or current process? Our support
+              team is here.</div>
+          </div>
+        </a>
+
+        <!-- Sales -->
+        <a class="contact-email-card" href="mailto:sales@hirex.me">
+          <div class="contact-email-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+            </svg>
+          </div>
+          <div>
+            <div class="contact-email-label">For Employers</div>
+            <div class="contact-email-value">sales@hirex.me</div>
+            <div class="contact-email-desc">Looking to hire? Let's discuss your brief, timeline, and how we can fill
+              your open roles fast.</div>
+          </div>
+        </a>
+
+        <!-- Careers -->
+        <a class="contact-email-card" href="mailto:careers@hirex.me">
+          <div class="contact-email-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div>
+            <div class="contact-email-label">Career Applications</div>
+            <div class="contact-email-value">careers@hirex.me</div>
+            <div class="contact-email-desc">Ready to apply? Submit your CV directly or use the form below to send your
+              full application.</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Office Info -->
+      <div class="reveal" style="margin-top:72px">
+        <span class="section-eyebrow">Our Offices</span>
+        <h2 class="section-title" style="margin-bottom:8px">Present across the region.</h2>
+        <p class="section-sub" style="margin-bottom:0">Nine offices. One standard of service.</p>
+      </div>
+      <div class="contact-offices reveal">
+        <div class="office-card">
+          <div class="office-flag"><img src="https://flagcdn.com/w80/az.png" alt="AZ"> AZE</div>
+          <div class="office-city">Baku</div>
+          <div class="office-country">Azerbaijan · HQ</div>
+          <div class="office-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>info@hirex.me</div>
+        </div>
+        <div class="office-card">
+          <div class="office-flag"><img src="https://flagcdn.com/w80/me.png" alt="ME"> MNE</div>
+          <div class="office-city">Podgorica</div>
+          <div class="office-country">Montenegro</div>
+          <div class="office-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>info@hirex.me</div>
+        </div>
+        <div class="office-card">
+          <div class="office-flag"><img src="https://flagcdn.com/w80/ba.png" alt="BA"> BIH</div>
+          <div class="office-city">Sarajevo</div>
+          <div class="office-country">Bosnia</div>
+          <div class="office-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>info@hirex.me</div>
+        </div>
+        <div class="office-card">
+          <div class="office-flag"><img src="https://flagcdn.com/w80/si.png" alt="SI"> SVN</div>
+          <div class="office-city">Ljubljana</div>
+          <div class="office-country">Slovenia</div>
+          <div class="office-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>info@hirex.me</div>
+        </div>
+        <div class="office-card">
+          <div class="office-flag"><img src="https://flagcdn.com/w80/tr.png" alt="TR"> TUR</div>
+          <div class="office-city">Istanbul</div>
+          <div class="office-country">Türkiye</div>
+          <div class="office-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>info@hirex.me</div>
+        </div>
+        <div class="office-card">
+          <div class="office-flag"><img src="https://flagcdn.com/w80/ge.png" alt="GE"> GEO</div>
+          <div class="office-city">Tbilisi</div>
+          <div class="office-country">Georgia</div>
+          <div class="office-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>info@hirex.me</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CV UPLOAD FORM ==================== -->
+  <section style="padding:32px 0" id="apply">
+    <div class="cv-section reveal">
+      <div class="container" style="max-width:100%">
+        <div style="text-align:center;max-width:620px;margin:0 auto">
+          <span class="section-eyebrow">Apply Now</span>
+          <h2 class="section-title" style="max-width:100%">Upload your CV.<br>We'll take it from here.</h2>
+          <p class="section-sub" style="max-width:100%;margin:20px auto 0">Fill in your details and attach your CV. Your
+            application goes directly to our recruitment team at <strong>careers@hirex.me</strong> and you'll hear back
+            within 48 hours.</p>
+        </div>
+
+        <div class="cv-form-wrap">
+          <!--
+          ============================================================
+          DEPLOYMENT NOTE:
+          This form uses Formspree for file handling.
+          Steps to activate:
+          1. Go to https://formspree.io and create a free account
+          2. Create a new form and set the email to careers@hirex.me
+          3. Replace "YOUR_FORM_ID" in the action URL below with
+             your actual Formspree form ID (e.g. xyzabcde)
+          4. The form will then deliver all submissions + CV
+             attachments directly to careers@hirex.me
+
+          Alternative: Use Netlify Forms (add netlify attribute)
+          or any backend that accepts multipart/form-data.
+          ============================================================
+        -->
+          <form id="cv-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data"
+            onsubmit="handleFormSubmit(event)">
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label>First Name *</label>
+                <input type="text" name="first_name" placeholder="John" required>
+              </div>
+              <div class="form-field">
+                <label>Last Name *</label>
+                <input type="text" name="last_name" placeholder="Doe" required>
+              </div>
+              <div class="form-field">
+                <label>Email Address *</label>
+                <input type="email" name="email" placeholder="Email Address" required>
+              </div>
+              <div class="form-field">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" placeholder="+1 234 567 890">
+              </div>
+              <div class="form-field full">
+                <label>Current Location</label>
+                <input type="text" name="location" placeholder="e.g. New York, USA">
+              </div>
+              <div class="form-field full">
+                <label>Area of Interest *</label>
+                <select name="area" required>
+                  <option value="" disabled selected>Select a field</option>
+                  <option>Technology &amp; IT</option>
+                  <option>Finance &amp; Business</option>
+                  <option>Healthcare</option>
+                  <option>Creative &amp; Marketing</option>
+                  <option>Operations &amp; Logistics</option>
+                  <option>Legal &amp; Compliance</option>
+                  <option>Human Resources</option>
+                  <option>Sales &amp; Business Development</option>
+                  <option>Engineering &amp; Manufacturing</option>
+                  <option>Hospitality &amp; Tourism</option>
+                  <option>Data &amp; Analytics</option>
+                  <option>Education &amp; Training</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-field full">
+                <label>Cover Letter / Message</label>
+                <textarea name="message"
+                  placeholder="Tell us a little about yourself, what you're looking for, and what makes you stand out..."></textarea>
+              </div>
+
+              <!-- CV UPLOAD -->
+              <div class="form-field full">
+                <label>Upload Your CV *</label>
+                <div class="cv-upload-area" id="upload-area">
+                  <input type="file" name="cv" id="cv-file" accept=".pdf,.doc,.docx" required
+                    onchange="handleFileChange(this)">
+                  <div class="cv-upload-icon">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                  </div>
+                  <div class="cv-upload-title">Drop your CV here or click to browse</div>
+                  <div class="cv-upload-sub">Supported formats: PDF, DOC, DOCX · Max 10 MB</div>
+                  <div class="cv-file-chosen" id="file-chosen-label"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Privacy note -->
+            <p style="font-size:12px;color:var(--text-tertiary);margin:20px 0 8px;line-height:1.6;text-align:center">
+              By submitting this form you agree that hireX may store and process your personal data for recruitment
+              purposes. We never share your data with third parties without your consent.
+            </p>
+
+            <!-- Submit -->
+            <button type="submit" class="form-submit-btn" id="submit-btn">
+              Send Application to the talent team
+            </button>
+          </form>
+
+          <!-- Success state -->
+          <div class="form-success" id="form-success">
+            <div class="form-success-icon">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#10b981" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h4>Application Received!</h4>
+            <p>Your CV and details have been sent to <strong>careers@hirex.me</strong>.<br>A member of our team will be
+              in touch within 48 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CTA ==================== -->
+  <section style="padding:0 24px 80px">
+    <div class="cta-banner reveal">
+      <h2>Ready to find where<br>you belong?</h2>
+      <p>Join 12,000+ professionals who found their next role with hireX.</p>
+      <a class="btn-white" href="#apply">Upload Your CV</a>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>hire<span>X</span></h3>
+          <p>Connecting professionals and companies across The Globe with clarity, care, and precision since 2022.</p>
+        </div>
+        <div class="footer-col">
+          <h4>For candidates</h4>
+          <a href="#careers">Career Paths</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#apply">Upload CV</a>
+          <a href="mailto:info@hirex.me">Get in Touch</a>
+        </div>
+        <div class="footer-col">
+          <h4>For Employers</h4>
+          <a href="#employers">Hire Talent</a>
+          <a href="mailto:sales@hirex.me">Submit a Job</a>
+          <a href="mailto:sales@hirex.me">Pricing</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="#about">About Us</a>
+          <a href="#metrics">Our Results</a>
+          <a href="#contact">Offices</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="#contact" style="margin-bottom:20px">Contact Us</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2022–2025 hireX L.L.C. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== MEGA NAV =====
+    var currentMenu = null, closeTimer = null;
+    function openNav(id) {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+      var wrap = document.getElementById('mega-menu-wrap');
+      var targetPanel = document.getElementById('mp-' + id);
+      var mainNav = document.getElementById('main-nav');
+      if (currentMenu === id) return;
+      if (currentMenu) {
+        var oldPanel = document.getElementById('mp-' + currentMenu);
+        if (oldPanel) oldPanel.classList.remove('visible');
+        var oldLi = document.getElementById('li-' + currentMenu);
+        if (oldLi) oldLi.classList.remove('active');
+      }
+      currentMenu = id;
+      mainNav.classList.add('is-open');
+      document.body.classList.add('nav-open');
+      document.getElementById('li-' + id).classList.add('active');
+      targetPanel.classList.add('visible');
+      wrap.style.height = targetPanel.offsetHeight + 'px';
+    }
+    function scheduleClose() { closeTimer = setTimeout(function () { closeNav(); }, 150); }
+    function cancelClose() { if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; } }
+    function closeNav() {
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+      var wrap = document.getElementById('mega-menu-wrap');
+      var mainNav = document.getElementById('main-nav');
+      mainNav.classList.remove('is-open');
+      document.body.classList.remove('nav-open');
+      document.querySelectorAll('#nav-links li').forEach(function (li) { li.classList.remove('active'); });
+      document.querySelectorAll('.mega-panel').forEach(function (p) { p.classList.remove('visible'); });
+      if (wrap) wrap.style.height = '0px';
+      currentMenu = null;
+    }
+    function toggleNav(id) { if (currentMenu === id) { closeNav(); } else { openNav(id); } }
+    function toggleMobileMenu() {
+      var nl = document.getElementById('nav-links');
+      nl.style.display = (nl.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    // ===== REVEAL ANIMATIONS =====
+    function initReveal() {
+      var wh = window.innerHeight;
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < wh - 10) { el.classList.add('visible'); }
+        else { el.classList.remove('visible'); obs.observe(el); }
+      });
+    }
+
+    // ===== CAREER SLIDER =====
+    function careerSlide(dir) {
+      var grid = document.getElementById('careers-grid');
+      grid.scrollBy({ left: dir * 329, behavior: 'smooth' });
+    }
+
+    // ===== CV FORM =====
+    function handleFileChange(input) {
+      var label = document.getElementById('file-chosen-label');
+      var area = document.getElementById('upload-area');
+      if (input.files && input.files[0]) {
+        label.style.display = 'block';
+        label.textContent = '✓ ' + input.files[0].name;
+        area.style.borderColor = 'var(--accent)';
+        area.style.background = 'rgba(143,64,198,.06)';
+      }
+    }
+
+    function handleFormSubmit(e) {
+      var btn = document.getElementById('submit-btn');
+      var form = document.getElementById('cv-form');
+      var success = document.getElementById('form-success');
+
+      // Check if Formspree is configured
+      if (form.action.includes('YOUR_FORM_ID')) {
+        e.preventDefault();
+        // Fallback: open mailto with form data
+        var firstName = form.querySelector('[name=first_name]').value;
+        var lastName = form.querySelector('[name=last_name]').value;
+        var email = form.querySelector('[name=email]').value;
+        var area = form.querySelector('[name=area]').value;
+        var message = form.querySelector('[name=message]').value;
+        var mailtoBody = encodeURIComponent(
+          'Name: ' + firstName + ' ' + lastName + '\n' +
+          'Email: ' + email + '\n' +
+          'Area of Interest: ' + area + '\n\n' +
+          'Message:\n' + message + '\n\n' +
+          '(Please remember to attach your CV)'
+        );
+        window.location.href = 'mailto:careers@hirex.me?subject=' +
+          encodeURIComponent('CV Application – ' + firstName + ' ' + lastName) +
+          '&body=' + mailtoBody;
+        showSuccessState(form, success, btn);
+        return;
+      }
+
+      // Formspree is configured — let it submit normally but show success UI
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      e.preventDefault();
+      var formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      }).then(function (resp) {
+        if (resp.ok) {
+          showSuccessState(form, success, btn);
+        } else {
+          btn.textContent = 'Send Application to the talent team';
+          btn.disabled = false;
+          showToast('Something went wrong. Please try emailing careers@hirex.me directly.');
+        }
+      }).catch(function () {
+        btn.textContent = 'Send Application to the talent team';
+        btn.disabled = false;
+        showToast('Network error. Please email careers@hirex.me directly.');
+      });
+    }
+
+    function showSuccessState(form, success, btn) {
+      form.style.display = 'none';
+      success.style.display = 'block';
+      success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // ===== TOAST =====
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(function () { t.classList.remove('show'); }, 3800);
+    }
+
+    // ===== DRAG & DROP ON UPLOAD AREA =====
+    document.addEventListener('DOMContentLoaded', function () {
+      // Loader
+      var loader = document.getElementById('page-loader');
+      if (loader) { setTimeout(function () { loader.classList.add('hidden'); }, 420); }
+
+      // Mega menu hover
+      ['browse', 'seekers', 'employers', 'about'].forEach(function (id) {
+        var li = document.getElementById('li-' + id);
+        var panel = document.getElementById('mp-' + id);
+        if (!li || !panel) return;
+        li.addEventListener('mouseenter', function () { openNav(id); });
+        li.addEventListener('mouseleave', function () { scheduleClose(); });
+        panel.addEventListener('mouseenter', function () { cancelClose(); });
+        panel.addEventListener('mouseleave', function () { scheduleClose(); });
+      });
+
+      // Career slider arrows
+      var grid = document.getElementById('careers-grid');
+      if (grid) {
+        grid.addEventListener('scroll', function () {
+          var prev = document.getElementById('career-prev');
+          var next = document.getElementById('career-next');
+          if (prev) { grid.scrollLeft > 40 ? prev.classList.add('visible') : prev.classList.remove('visible'); }
+          if (next) { Math.ceil(grid.scrollLeft + grid.clientWidth) >= grid.scrollWidth - 40 ? next.classList.add('hidden') : next.classList.remove('hidden'); }
+        });
+      }
+
+      // Drag & drop
+      var uploadArea = document.getElementById('upload-area');
+      if (uploadArea) {
+        uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+        uploadArea.addEventListener('dragleave', function () { uploadArea.classList.remove('drag-over'); });
+        uploadArea.addEventListener('drop', function (e) {
+          e.preventDefault();
+          uploadArea.classList.remove('drag-over');
+          var files = e.dataTransfer.files;
+          if (files.length > 0) {
+            document.getElementById('cv-file').files = files;
+            handleFileChange(document.getElementById('cv-file'));
+          }
+        });
+      }
+
+      initReveal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeNav();
+    });
+  </script>
+</body>
+
+</html>
