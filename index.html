@@ -153,17 +153,35 @@
     .hamburger {
       display: none;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
       cursor: pointer;
-      padding: 4px;
+      padding: 8px;
+      z-index: 1001;
+      transition: transform .3s cubic-bezier(.4, 0, .2, 1);
+      border-radius: 50%;
     }
 
     .hamburger span {
       display: block;
-      width: 22px;
+      width: 20px;
       height: 2px;
       background: var(--text);
       border-radius: 2px;
+      transition: transform .3s cubic-bezier(.4, 0, .2, 1), opacity .3s ease, background .3s ease;
+      transform-origin: center;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
     }
 
     /* SCRIM */
@@ -1568,7 +1586,55 @@
     /* ===== RESPONSIVE ===== */
     @media(max-width:860px) {
       #nav-links {
-        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: all .4s cubic-bezier(.4, 0, .2, 1);
+        padding: 80px 24px;
+      }
+
+      #nav-links.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
+      }
+
+      #nav-links li {
+        width: 100%;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all .4s cubic-bezier(.4, 0, .2, 1);
+      }
+
+      #nav-links.active li {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #nav-links.active li:nth-child(1) { transition-delay: .1s; }
+      #nav-links.active li:nth-child(2) { transition-delay: .15s; }
+      #nav-links.active li:nth-child(3) { transition-delay: .2s; }
+      #nav-links.active li:nth-child(4) { transition-delay: .25s; }
+
+      #nav-links li a {
+        font-size: 28px;
+        font-weight: 600;
+        height: auto;
+        padding: 12px;
+        justify-content: center;
       }
 
       .hamburger {
@@ -1576,7 +1642,59 @@
       }
 
       #nav-inner {
-        grid-template-columns: 1fr auto;
+        grid-template-columns: auto 1fr auto;
+        gap: 0;
+      }
+
+      #nav-logo {
+        z-index: 1001;
+      }
+
+      #mega-menu-wrap {
+        z-index: 1002;
+        position: fixed;
+        top: 52px;
+        background: #fff;
+      }
+
+      .mega-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        padding: 0 24px;
+        gap: 32px;
+      }
+
+      .mega-panel {
+        padding: 24px 0 40px;
+      }
+
+      .mlink-large {
+        font-size: 20px;
+      }
+
+      .mega-col {
+        transform: none !important;
+        opacity: 1 !important;
+      }
+
+      #mega-menu-wrap {
+        border-top: 1px solid var(--border);
+        background: #fff;
+      }
+
+      .careers-grid {
+        padding: 8px 20px 48px;
+        gap: 12px;
+      }
+
+      .career-card.wide, .career-card.narrow {
+        width: 280px;
+        height: auto;
+        min-height: 420px;
+      }
+
+      .slider-arrow {
+        display: none;
       }
 
       .pillars-grid,
@@ -1584,15 +1702,13 @@
       .metrics-row,
       .contact-offices {
         grid-template-columns: 1fr;
+        gap: 16px;
       }
 
       .employer-section,
       .cv-section {
-        padding: 60px 32px;
+        padding: 48px 20px;
         margin: 0;
-      }
-
-      .employer-section {
         border-radius: 0;
       }
 
@@ -1607,11 +1723,31 @@
 
       .timeline {
         flex-direction: column;
-        gap: 32px;
+        gap: 40px;
+        align-items: flex-start;
+        padding-left: 20px;
       }
 
       .timeline::before {
-        display: none;
+        display: block;
+        top: 0;
+        bottom: 0;
+        left: 28px;
+        width: 2px;
+        height: auto;
+        background: linear-gradient(to bottom, var(--accent), var(--accent-light), rgba(143, 64, 198, .1));
+      }
+
+      .timeline-step {
+        flex-direction: row;
+        text-align: left;
+        gap: 20px;
+        padding: 0;
+      }
+
+      .step-circle {
+        margin-bottom: 0;
+        flex-shrink: 0;
       }
 
       .contact-email-grid {
@@ -1629,29 +1765,92 @@
 
     @media(max-width:600px) {
       section {
-        padding: 64px 20px;
+        padding: 48px 20px;
       }
 
-      .employer-section {
-        border-radius: 0;
-        padding: 60px 24px;
+      .hero {
+        padding-top: 100px;
+        padding-bottom: 40px;
       }
 
-      .cta-banner {
-        border-radius: 24px;
+      .hero h1 {
+        font-size: 42px;
+        letter-spacing: -1px;
+      }
+
+      .hero-sub {
+        font-size: 16px;
+        margin-bottom: 32px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .btn-primary, .btn-secondary {
+        width: 100%;
+        text-align: center;
+      }
+
+      .hero-img-wrap {
+        height: 320px;
+        margin-top: 40px;
       }
 
       .hero-stat-cards {
-        flex-direction: column;
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 24px;
+        padding: 0 20px;
       }
 
-      .contact-offices {
-        grid-template-columns: 1fr;
+      .hero-stat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        min-width: 0;
       }
 
-      .cv-section {
-        border-radius: 0;
-        padding: 60px 24px;
+      .hero-stat-num { color: var(--text); font-size: 24px; }
+      .hero-stat-label { color: var(--text-secondary); }
+
+      .section-title {
+        font-size: 32px;
+      }
+
+      .logo-marquee-track img {
+        height: 60px;
+        width: 120px;
+      }
+
+      .logo-marquee-track {
+        gap: 32px;
+        animation-duration: 20s;
+      }
+
+      .cv-upload-area {
+        padding: 24px 16px;
+      }
+
+      .cv-upload-icon {
+        width: 44px;
+        height: 44px;
+      }
+
+      /* About Section Grid Fix */
+      #about .container > div {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+      }
+
+      #about .container > div > div:nth-child(2) {
+        order: -1;
       }
     }
 
@@ -1842,7 +2041,7 @@
 
     <div id="mega-menu-wrap">
       <div class="mega-panel" id="mp-browse">
-        <div class="mega-grid" style="display: flex; gap: 80px;">
+        <div class="mega-grid">
           <div class="mega-col">
             <span class="mega-label">Browse</span>
             <a class="mlink-large" href="#careers" onclick="closeNav()">All Careers</a>
@@ -1856,7 +2055,7 @@
         </div>
       </div>
       <div class="mega-panel" id="mp-seekers">
-        <div class="mega-grid" style="display: flex; gap: 80px;">
+        <div class="mega-grid">
           <div class="mega-col">
             <span class="mega-label">For Job Seekers</span>
             <a class="mlink-large" href="#how-it-works" onclick="closeNav()">How it Works</a>
@@ -1865,7 +2064,7 @@
         </div>
       </div>
       <div class="mega-panel" id="mp-employers">
-        <div class="mega-grid" style="display: flex; gap: 80px;">
+        <div class="mega-grid">
           <div class="mega-col">
             <span class="mega-label">For Employers</span>
             <a class="mlink-large" href="#contact" onclick="closeNav()">Hiring Solutions</a>
@@ -1874,7 +2073,7 @@
         </div>
       </div>
       <div class="mega-panel" id="mp-about">
-        <div class="mega-grid" style="display: flex; gap: 80px;">
+        <div class="mega-grid">
           <div class="mega-col">
             <span class="mega-label">About hireX</span>
             <a class="mlink-large" href="#about" onclick="closeNav()">Our Story</a>
@@ -2668,7 +2867,33 @@
     function toggleNav(id) { if (currentMenu === id) { closeNav(); } else { openNav(id); } }
     function toggleMobileMenu() {
       var nl = document.getElementById('nav-links');
-      nl.style.display = (nl.style.display === 'flex') ? 'none' : 'flex';
+      var hb = document.querySelector('.hamburger');
+      var isOpen = nl.classList.contains('active');
+      
+      if (!isOpen) {
+        nl.classList.add('active');
+        hb.classList.add('active');
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+      } else {
+        nl.classList.remove('active');
+        hb.classList.remove('active');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        closeNav(); // Close any open mega panels
+      }
+    }
+
+    // Update closeNav to also handle mobile menu
+    var originalCloseNav = closeNav;
+    closeNav = function() {
+      originalCloseNav();
+      var nl = document.getElementById('nav-links');
+      var hb = document.querySelector('.hamburger');
+      if (nl) nl.classList.remove('active');
+      if (hb) hb.classList.remove('active');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
 
     // ===== REVEAL ANIMATIONS =====
