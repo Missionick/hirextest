@@ -1642,18 +1642,33 @@
       }
 
       #nav-inner {
-        grid-template-columns: auto 1fr auto;
-        gap: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        height: 60px;
       }
 
       #nav-logo {
         z-index: 1001;
+        font-size: 20px;
+      }
+
+      #nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-nav-cta {
+        font-size: 11px;
+        padding: 6px 12px;
       }
 
       #mega-menu-wrap {
         z-index: 1002;
         position: fixed;
-        top: 52px;
+        top: 60px; /* Match new header height */
         background: #fff;
       }
 
@@ -1827,6 +1842,11 @@
       .logo-marquee-track img {
         height: 60px;
         width: 120px;
+      }
+
+      /* Header visibility refinements */
+      #nav-inner .btn-nav-cta {
+        display: none; /* Hide button in header, keep in overlay */
       }
 
       .logo-marquee-track {
