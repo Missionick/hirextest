@@ -36,49 +36,43 @@
       overflow-x: hidden;
     }
 
-    /* ===== NAV ===== */
     #main-nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1000;
-    }
-
-    * {
-      -webkit-tap-highlight-color: transparent;
+      z-index: 10000;
+      background: #ffffff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: none !important;
     }
 
     #nav-bar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: rgba(245, 245, 247, 0.85);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      position: relative;
+      background: #ffffff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-      transition: all .4s cubic-bezier(.4, 0, .2, 1);
     }
 
-    /* Fixed solid background for mobile menu */
-    #main-nav.is-open {
-      height: 100vh;
-      background: #ffffff !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      z-index: 10000 !important;
+    /* Desktop transparency */
+    @media (min-width: 861px) {
+      #main-nav {
+        background: transparent;
+      }
+      #nav-bar {
+        background: rgba(245, 245, 247, 0.85);
+        backdrop-filter: saturate(180%) blur(20px);
+        -webkit-backdrop-filter: saturate(180%) blur(20px);
+        transition: all .4s cubic-bezier(.4, 0, .2, 1);
+      }
+      #main-nav.is-open #nav-bar {
+        background: #ffffff;
+        backdrop-filter: none;
+      }
     }
 
-    #main-nav.is-open #nav-bar {
-      background: #ffffff !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      border-bottom-color: transparent;
-    }
-
-    #main-nav.is-open #nav-inner {
-      background: #ffffff !important;
-    }
 
     #nav-inner {
       max-width: 1200px;
@@ -1629,33 +1623,41 @@
         align-items: flex-start !important;
         justify-content: flex-start !important;
         gap: 0 !important;
-        z-index: 10000 !important;
+        z-index: 20000 !important;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: opacity .4s ease, visibility 0.4s ease;
+        transition: opacity .3s ease;
         padding: 24px 32px !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         overflow-y: auto;
       }
       
-      #mega-menu-wrap {
-        display: none !important;
+      #nav-links.active {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: all !important;
+        background: #ffffff !important;
       }
       
-      .desktop-only {
-        display: none !important;
-      }
-      
-      .mobile-only {
-        display: block !important;
+      #nav-bar, #nav-inner, #main-nav {
+        background: #ffffff !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        height: 60px !important;
+        opacity: 1 !important;
       }
 
-      #nav-links.active {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: all;
+      #mega-menu-wrap, #li-browse, #li-seekers, #li-employers {
+        display: none !important;
+      }
+      
+      /* Restore full opacity on mobile to fix 'washed out' look */
+      #main-nav.is-open #nav-logo,
+      #main-nav.is-open #nav-links li a,
+      #main-nav.is-open #nav-actions {
+        opacity: 1 !important;
       }
 
       #nav-links li {
@@ -1685,7 +1687,7 @@
         padding: 16px 0 !important;
         justify-content: flex-start !important;
         letter-spacing: -.5px;
-        color: var(--text) !important;
+        color: #000000 !important; /* Crisp high-contrast black (Apple Style) */
       }
 
       #nav-links li.mobile-only {
@@ -3028,6 +3030,14 @@
 
       var formData = new FormData(form);
       formData.append('access_key', '497830e9-8aba-4e28-9e0d-12c454deb480');
+      formData.append('from_name', 'hireX Application');
+      formData.append('subject', 'New CV Application Received');
+
+      // Debugging Logs
+      console.log('--- Form Submission Started ---');
+      for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[0] === 'cv' ? '[File Asset]' : pair[1]));
+      }
 
       fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -3035,6 +3045,7 @@
       }).then(function (resp) {
         return resp.json();
       }).then(function (data) {
+        console.log('Web3Forms Response:', data);
         if (data.success) {
           showSuccessState(form, success, btn);
         } else {
@@ -3043,6 +3054,7 @@
           showToast('Form Submission Failed: ' + (data.message || 'Please try again later.'));
         }
       }).catch(function (error) {
+        console.error('Submission Catch Error:', error);
         btn.textContent = 'Send Application to the talent team';
         btn.disabled = false;
         showToast('Network error. Please email careers@hirex.me directly.');
