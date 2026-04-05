@@ -46,17 +46,28 @@
     }
 
     #nav-bar {
-      position: relative;
+      position: sticky;
+      top: 0;
       z-index: 1000;
       background: rgba(245, 245, 247, 0.85);
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-      transition: background .3s, border-color .3s;
+      transition: all .4s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    #main-nav.is-open {
+      height: 100vh;
+      background: #ffffff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      z-index: 10000 !important;
     }
 
     #main-nav.is-open #nav-bar {
-      background: #fff;
+      background: #ffffff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       border-bottom-color: transparent;
     }
 
@@ -94,6 +105,10 @@
       align-items: center;
       list-style: none;
       gap: 0;
+    }
+
+    #nav-links li.mobile-only {
+      display: none;
     }
 
     #nav-links li a {
@@ -156,7 +171,7 @@
       gap: 6px;
       cursor: pointer;
       padding: 8px;
-      z-index: 1001;
+      z-index: 2001;
       transition: transform .3s cubic-bezier(.4, 0, .2, 1);
       border-radius: 50%;
     }
@@ -1585,24 +1600,34 @@
 
     /* ===== RESPONSIVE ===== */
     @media(max-width:860px) {
+      #nav-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        height: 60px;
+      }
+
       #nav-links {
         position: fixed;
-        top: 0;
+        top: 60px; /* Below the header bar */
         left: 0;
         right: 0;
         bottom: 0;
-        background: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-        z-index: 999;
+        background: #ffffff !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 0 !important;
+        z-index: 10000 !important;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: all .4s cubic-bezier(.4, 0, .2, 1);
-        padding: 80px 24px;
+        transition: all .45s cubic-bezier(.4, 0, .2, 1);
+        padding: 40px !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
       }
 
       #nav-links.active {
@@ -1612,11 +1637,12 @@
       }
 
       #nav-links li {
-        width: 100%;
-        text-align: center;
+        width: 100% !important;
+        text-align: left !important;
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
         transition: all .4s cubic-bezier(.4, 0, .2, 1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
       }
 
       #nav-links.active li {
@@ -1624,17 +1650,24 @@
         transform: translateY(0);
       }
 
-      #nav-links.active li:nth-child(1) { transition-delay: .1s; }
-      #nav-links.active li:nth-child(2) { transition-delay: .15s; }
-      #nav-links.active li:nth-child(3) { transition-delay: .2s; }
-      #nav-links.active li:nth-child(4) { transition-delay: .25s; }
+      #nav-links.active li:nth-child(1) { transition-delay: .05s; }
+      #nav-links.active li:nth-child(2) { transition-delay: .1s; }
+      #nav-links.active li:nth-child(3) { transition-delay: .15s; }
+      #nav-links.active li:nth-child(4) { transition-delay: .2s; }
+      #nav-links.active li:nth-child(5) { transition-delay: .25s; }
 
       #nav-links li a {
-        font-size: 28px;
-        font-weight: 600;
-        height: auto;
-        padding: 12px;
-        justify-content: center;
+        font-size: 26px !important;
+        font-weight: 500 !important;
+        height: auto !important;
+        padding: 16px 0 !important;
+        justify-content: flex-start !important;
+        letter-spacing: -.5px;
+        color: var(--text) !important;
+      }
+
+      #nav-links li.mobile-only {
+        display: block;
       }
 
       .hamburger {
@@ -1650,7 +1683,7 @@
       }
 
       #nav-logo {
-        z-index: 1001;
+        z-index: 2001;
         font-size: 20px;
       }
 
@@ -2051,6 +2084,7 @@
           <li id="li-seekers"><a onclick="toggleNav('seekers')">For Job Seekers</a></li>
           <li id="li-employers"><a onclick="toggleNav('employers')">For Employers</a></li>
           <li id="li-about"><a onclick="toggleNav('about')">About</a></li>
+          <li id="li-apply-mobile" class="mobile-only"><a href="#apply" onclick="closeNav()">Upload CV</a></li>
         </ul>
         <div id="nav-actions">
           <a class="btn-nav-cta" href="#apply">Upload CV</a>
@@ -2888,16 +2922,19 @@
     function toggleMobileMenu() {
       var nl = document.getElementById('nav-links');
       var hb = document.querySelector('.hamburger');
+      var mn = document.getElementById('main-nav');
       var isOpen = nl.classList.contains('active');
       
       if (!isOpen) {
         nl.classList.add('active');
         hb.classList.add('active');
+        if (mn) mn.classList.add('is-open');
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
       } else {
         nl.classList.remove('active');
         hb.classList.remove('active');
+        if (mn) mn.classList.remove('is-open');
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         closeNav(); // Close any open mega panels
@@ -3011,12 +3048,28 @@
     // ===== TOAST =====
     function showToast(msg) {
       var t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(function () { t.classList.remove('show'); }, 3800);
+      if (t) {
+        t.classList.add('show');
+        setTimeout(function () { t.classList.remove('show'); }, 3800);
+      }
     }
 
-    // ===== DRAG & DROP ON UPLOAD AREA =====
+    // ===== PAGE LOADER & REFRESH RESET =====
+    (function() {
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+    })();
+    
+    document.addEventListener('DOMContentLoaded', function () {
+      window.scrollTo(0, 0);
+    });
+
+    window.addEventListener('load', function() {
+      setTimeout(function() { window.scrollTo(0, 0); }, 0);
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
       // Loader
       var loader = document.getElementById('page-loader');
