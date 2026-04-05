@@ -3018,52 +3018,31 @@
     }
 
     function handleFormSubmit(e) {
+      e.preventDefault();
       var btn = document.getElementById('submit-btn');
       var form = document.getElementById('cv-form');
       var success = document.getElementById('form-success');
 
-      // Check if Formspree is configured
-      if (form.action.includes('YOUR_FORM_ID')) {
-        e.preventDefault();
-        // Fallback: open mailto with form data
-        var firstName = form.querySelector('[name=first_name]').value;
-        var lastName = form.querySelector('[name=last_name]').value;
-        var email = form.querySelector('[name=email]').value;
-        var area = form.querySelector('[name=area]').value;
-        var message = form.querySelector('[name=message]').value;
-        var mailtoBody = encodeURIComponent(
-          'Name: ' + firstName + ' ' + lastName + '\n' +
-          'Email: ' + email + '\n' +
-          'Area of Interest: ' + area + '\n\n' +
-          'Message:\n' + message + '\n\n' +
-          '(Please remember to attach your CV)'
-        );
-        window.location.href = 'mailto:careers@hirex.me?subject=' +
-          encodeURIComponent('CV Application – ' + firstName + ' ' + lastName) +
-          '&body=' + mailtoBody;
-        showSuccessState(form, success, btn);
-        return;
-      }
-
-      // Formspree is configured — let it submit normally but show success UI
       btn.textContent = 'Sending…';
       btn.disabled = true;
 
-      e.preventDefault();
       var formData = new FormData(form);
-      fetch(form.action, {
+      formData.append('access_key', '497830e9-8aba-4e28-9e0d-12c454deb480');
+
+      fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
+        body: formData
       }).then(function (resp) {
-        if (resp.ok) {
+        return resp.json();
+      }).then(function (data) {
+        if (data.success) {
           showSuccessState(form, success, btn);
         } else {
           btn.textContent = 'Send Application to the talent team';
           btn.disabled = false;
-          showToast('Something went wrong. Please try emailing careers@hirex.me directly.');
+          showToast('Form Submission Failed: ' + (data.message || 'Please try again later.'));
         }
-      }).catch(function () {
+      }).catch(function (error) {
         btn.textContent = 'Send Application to the talent team';
         btn.disabled = false;
         showToast('Network error. Please email careers@hirex.me directly.');
