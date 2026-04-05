@@ -45,6 +45,10 @@
       z-index: 1000;
     }
 
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
     #nav-bar {
       position: sticky;
       top: 0;
@@ -56,6 +60,7 @@
       transition: all .4s cubic-bezier(.4, 0, .2, 1);
     }
 
+    /* Fixed solid background for mobile menu */
     #main-nav.is-open {
       height: 100vh;
       background: #ffffff !important;
@@ -69,6 +74,10 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       border-bottom-color: transparent;
+    }
+
+    #main-nav.is-open #nav-inner {
+      background: #ffffff !important;
     }
 
     #nav-inner {
@@ -1624,10 +1633,23 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transition: all .45s cubic-bezier(.4, 0, .2, 1);
-        padding: 40px !important;
+        transition: opacity .4s ease, visibility 0.4s ease;
+        padding: 24px 32px !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        overflow-y: auto;
+      }
+      
+      #mega-menu-wrap {
+        display: none !important;
+      }
+      
+      .desktop-only {
+        display: none !important;
+      }
+      
+      .mobile-only {
+        display: block !important;
       }
 
       #nav-links.active {
@@ -2080,10 +2102,19 @@
       <div id="nav-inner">
         <a id="nav-logo" href="#hero">hire<span>X</span></a>
         <ul id="nav-links">
-          <li id="li-browse"><a onclick="toggleNav('browse')">Browse</a></li>
-          <li id="li-seekers"><a onclick="toggleNav('seekers')">For Job Seekers</a></li>
-          <li id="li-employers"><a onclick="toggleNav('employers')">For Employers</a></li>
-          <li id="li-about"><a onclick="toggleNav('about')">About</a></li>
+          <!-- Desktop Only (Headers) -->
+          <li id="li-browse" class="desktop-only"><a onclick="toggleNav('browse')">Browse</a></li>
+          <li id="li-seekers" class="desktop-only"><a onclick="toggleNav('seekers')">For Job Seekers</a></li>
+          <li id="li-employers" class="desktop-only"><a onclick="toggleNav('employers')">For Employers</a></li>
+          
+          <!-- Mobile Only (Direct Functional Links) -->
+          <li class="mobile-only"><a href="#careers" onclick="closeNav()">All Careers</a></li>
+          <li class="mobile-only"><a href="#how-it-works" onclick="closeNav()">How it Works</a></li>
+          <li class="mobile-only"><a href="#metrics" onclick="closeNav()">Our Numbers</a></li>
+          <li class="mobile-only"><a href="#offices" onclick="closeNav()">Offices</a></li>
+          <li class="mobile-only"><a href="#contact" onclick="closeNav()">Contact</a></li>
+          
+          <li id="li-about"><a href="#overview" onclick="closeNav()">About</a></li>
           <li id="li-apply-mobile" class="mobile-only"><a href="#apply" onclick="closeNav()">Upload CV</a></li>
         </ul>
         <div id="nav-actions">
